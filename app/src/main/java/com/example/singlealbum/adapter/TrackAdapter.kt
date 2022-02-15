@@ -32,6 +32,7 @@ class TrackViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(track: Track) {
         binding.track.text = track.file
+
         binding.button.setImageResource(
             if (track.isPlaying) {
                 R.drawable.ic_baseline_pause_circle_filled_24

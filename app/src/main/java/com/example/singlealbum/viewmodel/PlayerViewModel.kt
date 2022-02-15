@@ -14,6 +14,8 @@ class PlayerViewModel : ViewModel() {
     val data: LiveData<Album>
         get() = _data
 
+    val playId = MutableLiveData<Int>()
+
     init {
         loadTracks()
     }
@@ -25,5 +27,19 @@ class PlayerViewModel : ViewModel() {
                 _data.value = response.body()
             }
         } catch (e: Exception) {}
+    }
+
+    fun play(id: Int) {
+        playId.value = id
+
+        _data.value = data.value?.let { album ->
+            album.copy(tracks = album.tracks.map { track ->
+                if (id == track.id) {
+                    track.copy(isPlaying = !track.isPlaying)
+                } else {
+                    track.copy(isPlaying = false)
+                }
+            })
+        }
     }
 }

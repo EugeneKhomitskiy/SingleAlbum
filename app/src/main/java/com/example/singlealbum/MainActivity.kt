@@ -17,8 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel: PlayerViewModel by viewModels()
 
-    private var playId = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
@@ -29,22 +27,29 @@ class MainActivity : AppCompatActivity() {
         val adapter = TrackAdapter(object : TrackCallback {
             override fun onPlay(track: Track) {
 
+                if (track.id != viewModel.playId.value) {
+                    mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_STOP)
+                }
+
                 if (mediaObserver.player?.isPlaying == true) {
                     mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_PAUSE)
-                    track.isPlaying = false
+
                 } else {
-                    mediaObserver.apply {
-                        player?.setAudioAttributes(
-                            AudioAttributes.Builder()
-                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                .setUsage(AudioAttributes.USAGE_MEDIA)
-                                .build()
-                        )
-                        player?.setDataSource("${BuildConfig.BASE_URL}${track.id}.mp3")
-                    }.play()
-                    playId = track.id
-                    track.isPlaying = true
+                    if (track.id != viewModel.playId.value) {
+                        mediaObserver.apply {
+                            player?.setAudioAttributes(
+                                AudioAttributes.Builder()
+                                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                                    .build()
+                            )
+                            player?.setDataSource("${BuildConfig.BASE_URL}${track.id}.mp3")
+                        }.play()
+                    } else {
+                        mediaObserver.player?.start()
+                    }
                 }
+                viewModel.play(track.id)
             }
         })
         binding.list.adapter = adapter
@@ -57,17 +62,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         mediaObserver.player?.setOnCompletionListener {
-            var nextId = 0
-            mediaObserver.player?.reset()
+            var nextId = viewModel.playId.value!!
+            mediaObserver.onStateChanged(this, Lifecycle.Event.ON_STOP)
             viewModel.data.value?.let {
-                nextId = if (playId == it.tracks.size) 1 else playId + 1
+                nextId = if (viewModel.playId.value == it.tracks.size) 1 else nextId++
             }
             mediaObserver.apply {
                 player?.setDataSource("${BuildConfig.BASE_URL}${nextId}.mp3")
-                playId = nextId
             }.play()
+            viewModel.play(nextId)
         }
 
         lifecycle.addObserver(mediaObserver)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mediaObserver.onStateChanged(this, Lifecycle.Event.ON_PAUSE)
+        viewModel.play(mediaObserver.player?.currentPosition!!)
     }
 }

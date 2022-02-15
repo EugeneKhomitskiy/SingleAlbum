@@ -19,12 +19,9 @@ class MediaLifecycleObserver : LifecycleObserver {
         when (event) {
             Lifecycle.Event.ON_PAUSE -> {
                 player?.pause()
-                player?.reset()
             }
             Lifecycle.Event.ON_STOP -> {
-                player?.stop()
                 player?.reset()
-                player?.release()
             }
             Lifecycle.Event.ON_DESTROY -> source.lifecycle.removeObserver(this)
             else -> Unit
