@@ -3,9 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Eugene/AndroidStudioProjects/SingleAlbum/app/src/main/res/drawable/ic_baseline_circle_24.xml" value="0.15" />
         <entry key="..\:/Users/Eugene/AndroidStudioProjects/SingleAlbum/app/src/main/res/drawable/ic_baseline_pause_circle_filled_24.xml" value="0.1365" />
+        <entry key="..\:/Users/Eugene/AndroidStudioProjects/SingleAlbum/app/src/main/res/drawable/ic_baseline_play_arrow_24.xml" value="0.15" />
         <entry key="..\:/Users/Eugene/AndroidStudioProjects/SingleAlbum/app/src/main/res/drawable/ic_baseline_play_circle_filled_24.xml" value="0.1365" />
+        <entry key="..\:/Users/Eugene/AndroidStudioProjects/SingleAlbum/app/src/main/res/drawable/ic_baseline_skip_next_24.xml" value="0.15" />
+        <entry key="..\:/Users/Eugene/AndroidStudioProjects/SingleAlbum/app/src/main/res/drawable/ic_baseline_skip_previous_24.xml" value="0.15" />
         <entry key="..\:/Users/Eugene/AndroidStudioProjects/SingleAlbum/app/src/main/res/layout/activity_main.xml" value="0.22780797101449277" />
+        <entry key="..\:/Users/Eugene/AndroidStudioProjects/SingleAlbum/app/src/main/res/layout/card.xml" value="0.2644927536231884" />
         <entry key="..\:/Users/Eugene/AndroidStudioProjects/SingleAlbum/app/src/main/res/layout/track.xml" value="0.22780797101449277" />
       </map>
     </option>

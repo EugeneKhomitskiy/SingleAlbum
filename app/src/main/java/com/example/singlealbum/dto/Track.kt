@@ -1,7 +1,8 @@
 package com.example.singlealbum.dto
 
 data class Track(
-    var id: Int,
+    val id: Int,
     val file: String,
-    var isPlaying: Boolean
+    val isPlaying: Boolean,
+    val selected: Boolean
 )

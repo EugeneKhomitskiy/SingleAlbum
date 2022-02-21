@@ -26,7 +26,8 @@ class PlayerViewModel : ViewModel() {
             if (response.isSuccessful) {
                 _data.value = response.body()
             }
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
     }
 
     fun play(id: Int) {
@@ -35,11 +36,17 @@ class PlayerViewModel : ViewModel() {
         _data.value = data.value?.let { album ->
             album.copy(tracks = album.tracks.map { track ->
                 if (id == track.id) {
-                    track.copy(isPlaying = !track.isPlaying)
+                    track.copy(isPlaying = !track.isPlaying, selected = true)
                 } else {
-                    track.copy(isPlaying = false)
+                    track.copy(isPlaying = false, selected = false)
                 }
             })
         }
+    }
+
+    fun isPlaying(): Boolean {
+        return data.value?.tracks?.filter { track ->
+            track.isPlaying
+        }.isNullOrEmpty()
     }
 }

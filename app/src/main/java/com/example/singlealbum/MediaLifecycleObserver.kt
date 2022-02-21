@@ -9,10 +9,8 @@ class MediaLifecycleObserver : LifecycleObserver {
     var player: MediaPlayer? = MediaPlayer()
 
     fun play() {
-        player?.setOnPreparedListener {
-            it.start()
-        }
-        player?.prepareAsync()
+        player?.prepare()
+        player?.start()
     }
 
     fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -21,9 +19,10 @@ class MediaLifecycleObserver : LifecycleObserver {
                 player?.pause()
             }
             Lifecycle.Event.ON_STOP -> {
+                player?.stop()
                 player?.reset()
             }
-            Lifecycle.Event.ON_DESTROY -> source.lifecycle.removeObserver(this)
+            Lifecycle.Event.ON_DESTROY -> { source.lifecycle.removeObserver(this) }
             else -> Unit
         }
     }

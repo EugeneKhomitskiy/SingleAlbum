@@ -2,6 +2,7 @@ package com.example.singlealbum.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -21,8 +22,8 @@ class TrackAdapter(private val trackCallback: TrackCallback) :
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        val place = getItem(position)
-        holder.bind(place)
+        val track = getItem(position)
+        holder.bind(track)
     }
 }
 
@@ -30,19 +31,32 @@ class TrackViewHolder(
     private val binding: TrackBinding,
     private val trackCallback: TrackCallback
 ) : RecyclerView.ViewHolder(binding.root) {
+
     fun bind(track: Track) {
-        binding.track.text = track.file
 
-        binding.button.setImageResource(
-            if (track.isPlaying) {
-                R.drawable.ic_baseline_pause_circle_filled_24
-            } else {
-                R.drawable.ic_baseline_play_circle_filled_24
+        with(binding.track) {
+            text = track.file
+            setTextColor(
+                if (track.isPlaying || track.selected) {
+                    ContextCompat.getColor(this.context, R.color.teal_700)
+                } else {
+                    ContextCompat.getColor(this.context, R.color.black)
+                }
+            )
+        }
+
+        with(binding.button) {
+            setImageResource(
+                if (track.isPlaying) {
+                    R.drawable.ic_baseline_pause_24
+                } else {
+                    R.drawable.ic_baseline_play_24
+                }
+            )
+
+            setOnClickListener {
+                trackCallback.onPlay(track)
             }
-        )
-
-        binding.button.setOnClickListener {
-            trackCallback.onPlay(track)
         }
     }
 }
