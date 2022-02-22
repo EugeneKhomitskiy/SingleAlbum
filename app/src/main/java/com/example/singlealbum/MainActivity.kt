@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mediaObserver: MediaLifecycleObserver
+    private lateinit var track: Track
     private val viewModel: PlayerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,16 +31,18 @@ class MainActivity : AppCompatActivity() {
 
         val adapter = TrackAdapter(object : TrackCallback {
             override fun onPlay(track: Track) {
-                play(track.id)
+                play(track)
             }
         })
 
         binding.list.adapter = adapter
 
         with(binding) {
-            buttonPlay.setOnClickListener { play(viewModel.playId.value!!) }
-            buttonNext.setOnClickListener { playNextTrack(viewModel.playId.value!!) }
-            buttonPrev.setOnClickListener { playPrevTrack(viewModel.playId.value!!) }
+            buttonPlay.setOnClickListener {
+                play(viewModel.data.value?.tracks!![viewModel.playId.value!! - 1])
+            }
+            buttonNext.setOnClickListener { playNextTrack() }
+            buttonPrev.setOnClickListener { playPrevTrack() }
         }
 
         viewModel.data.observe(this) {
@@ -68,18 +71,18 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(mediaObserver)
     }
 
-    fun play(id: Int) {
+    fun play(track: Track) {
         mediaObserver.player?.setOnCompletionListener {
-            playNextTrack(viewModel.playId.value!!)
+            playNextTrack()
         }
-
-        if (id != viewModel.playId.value) {
+        
+        if (track.id != viewModel.playId.value) {
             mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_STOP)
         }
         if (mediaObserver.player?.isPlaying == true) {
             mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_PAUSE)
         } else {
-            if (id != viewModel.playId.value) {
+            if (track.id != viewModel.playId.value) {
                 mediaObserver.apply {
                     player?.setAudioAttributes(
                         AudioAttributes.Builder()
@@ -87,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                             .setUsage(AudioAttributes.USAGE_MEDIA)
                             .build()
                     )
-                    player?.setDataSource("${BuildConfig.BASE_URL}${id}.mp3")
+                    player?.setDataSource("${BuildConfig.BASE_URL}${track.file}")
                 }.play()
 
                 initialiseSeekBar()
@@ -95,23 +98,29 @@ class MainActivity : AppCompatActivity() {
                 mediaObserver.player?.start()
             }
         }
-        viewModel.play(id)
+        viewModel.play(track.id)
     }
 
-    private fun playNextTrack(id: Int) {
-        var trackId = id
+    private fun playNextTrack() {
         viewModel.data.value?.let {
-            trackId = if (viewModel.playId.value == it.tracks.size) 1 else ++trackId
+            track = if (viewModel.playId.value == it.tracks.size) {
+                it.tracks[0]
+            } else {
+                it.tracks[viewModel.playId.value!!]
+            }
         }
-        play(trackId)
+        play(track)
     }
 
-    private fun playPrevTrack(id: Int) {
-        var trackId = id
+    private fun playPrevTrack() {
         viewModel.data.value?.let {
-            trackId = if (trackId == 1) it.tracks.size else --trackId
+            track = if (viewModel.playId.value == 1) {
+                it.tracks[it.tracks.size - 1]
+            } else {
+                it.tracks[viewModel.playId.value!! - 2]
+            }
         }
-        play(trackId)
+        play(track)
     }
 
     private fun initialiseSeekBar() {
