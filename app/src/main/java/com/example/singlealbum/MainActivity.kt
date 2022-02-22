@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         mediaObserver.player?.setOnCompletionListener {
             playNextTrack()
         }
-        
+
         if (track.id != viewModel.playId.value) {
             mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_STOP)
         }
